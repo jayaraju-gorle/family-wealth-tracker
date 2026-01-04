@@ -19,7 +19,7 @@ const firebaseConfig = {
   appId: "1:772545827002:web:613a4136efcf73cf45b283",
   measurementId: "G-NKLTWW0Q55",
   // IMPORTANT: Database URL is required for Realtime Database
-  databaseURL: "https://gen-lang-client-0981591737-default-rtdb.firebaseio.com"
+  databaseURL: "https://gen-lang-client-0981591737-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
 let app: FirebaseApp | undefined;
@@ -44,7 +44,7 @@ export const initFirebase = () => {
     if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "AIzaSy..." || !firebaseConfig.apiKey.startsWith("AIza")) {
       console.warn("Firebase Config is missing or invalid. Enabled DEMO MODE (Local Simulation).");
       mockMode = true;
-      return true; 
+      return true;
     }
 
     app = initializeApp(firebaseConfig);
@@ -77,10 +77,10 @@ export const syncFamilyData = async (familyId: string, data: AppState) => {
 export const subscribeToFamilyData = (familyId: string, callback: (data: AppState) => void) => {
   if (mockMode) {
     console.log(`[Demo Mode] Subscribed to family ${familyId}`);
-    return () => {};
+    return () => { };
   }
-  if (!db || !familyId) return () => {};
-  
+  if (!db || !familyId) return () => { };
+
   const familyRef = ref(db, `families/${familyId}`);
   const unsubscribe = onValue(familyRef, (snapshot) => {
     const val = snapshot.val();
@@ -102,19 +102,19 @@ export const authenticateAnonymously = async () => {
 
   if (!auth) {
     const success = initFirebase();
-    if(!success) throw new Error("Firebase configuration missing");
+    if (!success) throw new Error("Firebase configuration missing");
   }
-  
+
   if (mockMode) return;
 
   if (!auth) throw new Error("Firebase Auth failed to initialize.");
-  
+
   try {
     await signInAnonymously(auth);
   } catch (error: any) {
     console.error("Auth Error:", error);
     if (error.code === 'auth/admin-restricted-operation' || error.code === 'auth/operation-not-allowed') {
-       console.error("IMPORTANT: Enable 'Anonymous' sign-in in Firebase Console -> Authentication.");
+      console.error("IMPORTANT: Enable 'Anonymous' sign-in in Firebase Console -> Authentication.");
     }
     throw error;
   }
