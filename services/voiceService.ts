@@ -116,7 +116,7 @@ RULES:
 - You can help add, update, or query assets, liabilities, and milestones
 - Parse Indian amounts: "5 lakh" = 500000, "2 crore" = 20000000
 - If user asks to modify data, respond with what you've done AND include a JSON action block in your text like: ACTION_JSON:{"action":"ADD_ASSET","name":"...","value":number,"assetType":"..."}
-- VALID ASSET TYPES: CASH, SAVINGS_ACCOUNT, MUTUAL_FUND, STOCK, REAL_ESTATE, GOLD, SILVER, FD, EPF_PPF, NPS, INSURANCE, BONDS, CRYPTO, VEHICLE, ESOPS, LENDING, OTHER
+- VALID ASSET TYPES: CASH, SAVINGS_ACCOUNT, MUTUAL_FUND, STOCK, REAL_ESTATE, GOLD, DIGITAL_GOLD, SILVER, FD, EPF_PPF, NPS, INSURANCE, BONDS, CRYPTO, VEHICLE, ESOPS, LENDING, OTHER
 - VALID LIABILITY TYPES: HOME_LOAN, MORTGAGE, CAR_LOAN, VEHICLE_LOAN, EDUCATION_LOAN, PERSONAL_LOAN, BUSINESS_LOAN, GOLD_LOAN, CREDIT_CARD, OTHER
 - Support English, Hindi, and Telugu
 - Be warm, friendly, and brief — this is a voice conversation`;

@@ -24,6 +24,8 @@ const en = {
     no_assets_yet: 'No assets tracked yet.',
     add_first_asset: '+ Add your first asset',
     from_last_entry: 'from last entry',
+    open_portfolio: 'View in portfolio →',
+    highlight_liquid: 'Liquid types (runway) are highlighted',
 
     // ─── Assets & Liabilities ──────────────────────────────
     portfolio_manager: 'Portfolio Manager',
@@ -120,6 +122,11 @@ const en = {
     expense_name: 'e.g. Rent + maintenance',
     add_expenses_hint: 'Add your monthly costs to see how many months of liquid assets you have.',
     liquid_for_runway: 'Liquid assets',
+    liquid_of_total: 'of {amount} total assets',
+    liquid_what_title: 'What counts as liquid?',
+    liquid_what_body: 'Cash you could typically use in an emergency within days: cash, savings accounts, mutual funds, stocks, FDs, bonds, crypto, and digital gold. An asset is liquid or not based on the Type you assign — not on a separate list.',
+    liquid_vs_total: 'Total assets is everything you own. Property, SGB/physical gold, silver, EPF/PPF, NPS, insurance, ESOPs, vehicles, and money lent out are treated as non-liquid, so they are left out of runway and liquid-asset goals.',
+    asset_type_liquid_note: 'Type is what splits liquid from the rest: the first group in the Type menu is counted for runway and emergency-fund goals.',
     gross_runway: 'Gross runway',
     gross_runway_hint: 'Liquid ÷ monthly spend',
     net_runway: 'After income',
@@ -147,6 +154,8 @@ const hi: TranslationKeys = {
     no_assets_yet: 'अभी तक कोई एसेट ट्रैक नहीं।',
     add_first_asset: '+ पहला एसेट जोड़ें',
     from_last_entry: 'पिछली एंट्री से',
+    open_portfolio: 'पोर्टफोलियो देखें →',
+    highlight_liquid: 'तरल प्रकार (रनवे) हाइलाइट हैं',
 
     // ─── Assets & Liabilities ──────────────────────────────
     portfolio_manager: 'पोर्टफोलियो मैनेजर',
@@ -242,6 +251,11 @@ const hi: TranslationKeys = {
     expense_name: 'उदा. किराया + मेंटेनेंस',
     add_expenses_hint: 'मासिक खर्च जोड़ें और देखें तरल संपत्ति कितने महीने चलेगी।',
     liquid_for_runway: 'तरल संपत्ति',
+    liquid_of_total: 'कुल एसेट्स {amount} में से',
+    liquid_what_title: 'तरल क्या गिना जाता है?',
+    liquid_what_body: 'आपात में कुछ दिनों में इस्तेमाल हो सकने वाला पैसा: नकद, बचत खाता, म्यूचुअल फंड, स्टॉक, FD, बॉन्ड, क्रिप्टो और डिजिटल गोल्ड। तरल/गैर-तरल आपके चुने हुए Type से तय होता है — अलग सूची से नहीं।',
+    liquid_vs_total: 'कुल एसेट्स वो सब है जो आपके पास है। प्रॉपर्टी, SGB/भौतिक सोना, चाँदी, EPF/PPF, NPS, बीमा, ESOP, वाहन और उधार दिया पैसा गैर-तरल माना जाता है, इसलिए रनवे और लिक्विड लक्ष्यों में नहीं आता।',
+    asset_type_liquid_note: 'Type ही तरल और बाकी एसेट्स को अलग करता है: Type मेनू का पहला समूह रनवे और आपातकालीन फंड में गिना जाता है।',
     gross_runway: 'कुल रनवे',
     gross_runway_hint: 'तरल ÷ मासिक खर्च',
     net_runway: 'आय के बाद',
@@ -269,6 +283,8 @@ const te: TranslationKeys = {
     no_assets_yet: 'ఇంకా ఆస్తులు ట్రాక్ చేయలేదు.',
     add_first_asset: '+ మొదటి ఆస్తిని జోడించండి',
     from_last_entry: 'గత ఎంట్రీ నుండి',
+    open_portfolio: 'పోర్ట్‌ఫోలియో చూడండి →',
+    highlight_liquid: 'ద్రవ రకాలు (రన్‌వే) హైలైట్',
 
     // ─── Assets & Liabilities ──────────────────────────────
     portfolio_manager: 'పోర్ట్‌ఫోలియో మేనేజర్',
@@ -364,6 +380,11 @@ const te: TranslationKeys = {
     expense_name: 'ఉదా. అద్దె + మెయింటెనెన్స్',
     add_expenses_hint: 'నెలవారీ ఖర్చులు జోడిస్తే ద్రవ ఆస్తులు ఎన్ని నెలలు సరిపోతాయో కనిపిస్తుంది.',
     liquid_for_runway: 'ద్రవ ఆస్తులు',
+    liquid_of_total: 'మొత్తం ఆస్తులు {amount}లో',
+    liquid_what_title: 'ద్రవంగా ఏమి లెక్క?',
+    liquid_what_body: 'అత్యవసరంగా కొన్ని రోజుల్లో వాడగలిగే డబ్బు: నగదు, సేవింగ్స్, మ్యూచువల్ ఫండ్స్, స్టాక్స్, FDలు, బాండ్లు, క్రిప్టో, డిజిటల్ గోల్డ్. ద్రవమా కాదా అనేది మీరు పెట్టిన Type వల్ల — వేరే జాబితా వల్ల కాదు.',
+    liquid_vs_total: 'మొత్తం ఆస్తులు మీదున్నవన్నీ. ప్రాపర్టీ, SGB/భౌతిక బంగారం, వెండి, EPF/PPF, NPS, బీమా, ESOPలు, వాహనాలు, ఇచ్చిన అప్పు ద్రవం కావు — కాబట్టి రన్‌వే మరియు ద్రవ లక్ష్యాల్లో ఉండవు.',
+    asset_type_liquid_note: 'Typeే ద్రవాన్ని మిగతా ఆస్తుల నుంచి వేరు చేస్తుంది: Type మెనూలో మొదటి గ్రూప్ రన్‌వే మరియు ఎమర్జెన్సీ ఫండ్‌లో లెక్క.',
     gross_runway: 'మొత్తం రన్‌వే',
     gross_runway_hint: 'ద్రవ ÷ నెలవారీ ఖర్చు',
     net_runway: 'ఆదాయం తర్వాత',

@@ -23,7 +23,16 @@ const App: React.FC = () => {
     if (autoSnapshotTaken) setShowToast(true);
   }, [autoSnapshotTaken]);
   const [activeView, setActiveView] = useState<'dashboard' | 'assets' | 'history'>('dashboard');
+  const [portfolioTab, setPortfolioTab] = useState<'assets' | 'liabilities'>('assets');
+  const [highlightLiquid, setHighlightLiquid] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const openPortfolio = (tab: 'assets' | 'liabilities', liquid = false) => {
+    setPortfolioTab(tab);
+    setHighlightLiquid(liquid);
+    setActiveView('assets');
+    setMobileMenuOpen(false);
+  };
 
   const totalAssets = useMemo(() => state.assets.reduce((a, b) => a + b.value, 0), [state.assets]);
   const totalLiabilities = useMemo(() => state.liabilities.reduce((a, b) => a + b.value, 0), [state.liabilities]);
@@ -45,8 +54,13 @@ const App: React.FC = () => {
   const NavItem = ({ view, label, icon: Icon }: any) => (
     <button
       onClick={() => {
-        setActiveView(view);
-        setMobileMenuOpen(false);
+        if (view === 'assets') {
+          openPortfolio('assets');
+        } else {
+          setHighlightLiquid(false);
+          setActiveView(view);
+          setMobileMenuOpen(false);
+        }
       }}
       className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all ${activeView === view
         ? 'bg-white/10 text-white shadow-lg border border-white/5'
@@ -169,7 +183,12 @@ const App: React.FC = () => {
                 {/* Hero Summary Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {/* Total Assets */}
-                  <div className="group bg-gradient-to-br from-emerald-500/15 to-emerald-600/5 backdrop-blur-md border border-emerald-500/20 rounded-2xl p-5 transition-all duration-300 hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-500/10">
+                  <button
+                    type="button"
+                    onClick={() => openPortfolio('assets')}
+                    className="group bg-gradient-to-br from-emerald-500/15 to-emerald-600/5 backdrop-blur-md border border-emerald-500/20 rounded-2xl p-5 text-left transition-all duration-300 hover:border-emerald-500/40 hover:shadow-lg hover:shadow-emerald-500/10 cursor-pointer"
+                    aria-label={`${t('total_assets')} — ${t('open_portfolio')}`}
+                  >
                     <div className="flex items-center gap-3 mb-3">
                       <div className="p-2.5 bg-emerald-500/20 rounded-xl">
                         <TrendingUp className="w-5 h-5 text-emerald-400" />
@@ -178,10 +197,16 @@ const App: React.FC = () => {
                     </div>
                     <div className="text-2xl font-bold text-white">{formatCurrency(totalAssets)}</div>
                     <div className="text-xs text-emerald-300/60 mt-1">{state.assets.length} items tracked</div>
-                  </div>
+                    <div className="text-[11px] text-emerald-300/80 mt-2 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">{t('open_portfolio')}</div>
+                  </button>
 
                   {/* Total Liabilities */}
-                  <div className="group bg-gradient-to-br from-rose-500/15 to-rose-600/5 backdrop-blur-md border border-rose-500/20 rounded-2xl p-5 transition-all duration-300 hover:border-rose-500/40 hover:shadow-lg hover:shadow-rose-500/10">
+                  <button
+                    type="button"
+                    onClick={() => openPortfolio('liabilities')}
+                    className="group bg-gradient-to-br from-rose-500/15 to-rose-600/5 backdrop-blur-md border border-rose-500/20 rounded-2xl p-5 text-left transition-all duration-300 hover:border-rose-500/40 hover:shadow-lg hover:shadow-rose-500/10 cursor-pointer"
+                    aria-label={`${t('total_liabilities')} — ${t('open_portfolio')}`}
+                  >
                     <div className="flex items-center gap-3 mb-3">
                       <div className="p-2.5 bg-rose-500/20 rounded-xl">
                         <TrendingDown className="w-5 h-5 text-rose-400" />
@@ -190,7 +215,8 @@ const App: React.FC = () => {
                     </div>
                     <div className="text-2xl font-bold text-white">{formatCurrency(totalLiabilities)}</div>
                     <div className="text-xs text-rose-300/60 mt-1">{state.liabilities.length} items tracked</div>
-                  </div>
+                    <div className="text-[11px] text-rose-300/80 mt-2 opacity-80 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">{t('open_portfolio')}</div>
+                  </button>
 
                   {/* Net Worth */}
                   <div className="group bg-gradient-to-br from-indigo-500/15 to-purple-600/10 backdrop-blur-md border border-indigo-500/20 rounded-2xl p-5 transition-all duration-300 hover:border-indigo-500/40 hover:shadow-lg hover:shadow-indigo-500/10">
@@ -212,7 +238,7 @@ const App: React.FC = () => {
                 </div>
 
                 {/* Runway & monthly expenses */}
-                <Runway data={state} onUpdate={updateState} />
+                <Runway data={state} onUpdate={updateState} onOpenLiquidAssets={() => openPortfolio('assets', true)} />
 
                 {/* Projections Chart */}
                 <Projections data={state} />
@@ -225,7 +251,7 @@ const App: React.FC = () => {
                   <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-white/15 animate-slide-up">
                     <div className="px-6 py-4 border-b border-white/10 flex justify-between items-center bg-white/5">
                       <h3 className="text-lg font-semibold text-white">{t('top_assets')}</h3>
-                      <button onClick={() => setActiveView('assets')} className="text-sm text-indigo-400 hover:text-white transition-colors">
+                      <button onClick={() => openPortfolio('assets')} className="text-sm text-indigo-400 hover:text-white transition-colors">
                         Manage →
                       </button>
                     </div>
@@ -248,7 +274,7 @@ const App: React.FC = () => {
                           <div className="text-center py-8">
                             <Wallet className="w-10 h-10 text-slate-600 mx-auto mb-3" />
                             <p className="text-slate-500 text-sm">{t('no_assets_yet')}</p>
-                            <button onClick={() => setActiveView('assets')} className="mt-3 text-sm text-indigo-400 hover:text-white transition-colors">
+                            <button onClick={() => openPortfolio('assets')} className="mt-3 text-sm text-indigo-400 hover:text-white transition-colors">
                               {t('add_first_asset')}
                             </button>
                           </div>
@@ -262,7 +288,7 @@ const App: React.FC = () => {
 
             {activeView === 'assets' && (
               <div className="animate-fade-in">
-                <AssetsLiabilities data={state} onUpdate={updateState} />
+                <AssetsLiabilities data={state} onUpdate={updateState} initialTab={portfolioTab} highlightLiquid={highlightLiquid} />
               </div>
             )}
 
@@ -285,7 +311,10 @@ const App: React.FC = () => {
             ].map(({ view, label, icon: Icon }) => (
               <button
                 key={view}
-                onClick={() => setActiveView(view)}
+                onClick={() => {
+                  if (view === 'assets') openPortfolio('assets');
+                  else setActiveView(view);
+                }}
                 className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all ${activeView === view
                   ? 'text-indigo-400'
                   : 'text-slate-500 hover:text-slate-300'

@@ -283,7 +283,7 @@ export const Milestones: React.FC<Props> = ({ data, onUpdate }) => {
             />
           </div>
           <div className="sm:col-span-2">
-            <label className={LABEL_CLASS}>{t('milestones_track_against')}</label>
+            <label className={LABEL_CLASS} title={t('liquid_what_body')}>{t('milestones_track_against')}</label>
             <select
               value={newGoalMode}
               onChange={e => setNewGoalMode(e.target.value as MilestoneTrackingMode)}
@@ -304,6 +304,9 @@ export const Milestones: React.FC<Props> = ({ data, onUpdate }) => {
             </button>
           </div>
         </div>
+        {newGoalMode === 'liquid_assets' && (
+          <p className="text-[11px] text-slate-500 mt-3 leading-relaxed">{t('liquid_what_body')}</p>
+        )}
       </div>
     </GlassCard>
   );

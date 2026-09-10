@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { AppState, INITIAL_STATE } from '../types';
+import { AppState, INITIAL_STATE, reclassifyAssetType } from '../types';
 import * as FirebaseService from './firebase';
 
 const STORAGE_KEY = 'family_wealth_tracker_v1';
@@ -29,6 +29,7 @@ const sanitizeState = (data: any): AppState => {
   // Ensure assets have valuationMode (backward compatibility)
   const assets = (data.assets || []).map((a: any) => ({
     ...a,
+    type: reclassifyAssetType(a.type, a.name),
     valuationMode: a.valuationMode || 'manual',
   }));
   return {
@@ -212,6 +213,24 @@ export const useStore = () => {
       console.log(`[Auto-Snapshot] Logged net worth: ${netWorth} for ${today}`);
     }, 1500);
   }, []);
+
+  const digitalGoldSynced = useRef(false);
+  useEffect(() => {
+    if (digitalGoldSynced.current || !state.familyId) return;
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('wt_digital_gold_type_migrated')) {
+      digitalGoldSynced.current = true;
+      return;
+    }
+    const remapped = state.assets.map(a => ({
+      ...a,
+      type: reclassifyAssetType(a.type, a.name),
+    }));
+    const hasNamedDigitalGold = state.assets.some(a => /digital\s*gold/i.test(a.name || ''));
+    if (!hasNamedDigitalGold) return;
+    digitalGoldSynced.current = true;
+    localStorage.setItem('wt_digital_gold_type_migrated', '1');
+    updateState({ assets: remapped });
+  }, [state.assets, state.familyId, updateState]);
 
   return { state, updateState, isSynced, syncStatus, forcePull, autoSnapshotTaken };
 };

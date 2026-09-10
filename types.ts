@@ -1,9 +1,18 @@
-export type AssetType = 'CASH' | 'SAVINGS_ACCOUNT' | 'MUTUAL_FUND' | 'STOCK' | 'REAL_ESTATE' | 'GOLD' | 'SILVER' | 'FD' | 'EPF_PPF' | 'NPS' | 'INSURANCE' | 'BONDS' | 'CRYPTO' | 'VEHICLE' | 'ESOPS' | 'LENDING' | 'OTHER';
+export type AssetType = 'CASH' | 'SAVINGS_ACCOUNT' | 'MUTUAL_FUND' | 'STOCK' | 'REAL_ESTATE' | 'GOLD' | 'DIGITAL_GOLD' | 'SILVER' | 'FD' | 'EPF_PPF' | 'NPS' | 'INSURANCE' | 'BONDS' | 'CRYPTO' | 'VEHICLE' | 'ESOPS' | 'LENDING' | 'OTHER';
 export type LiabilityType = 'HOME_LOAN' | 'MORTGAGE' | 'CAR_LOAN' | 'VEHICLE_LOAN' | 'EDUCATION_LOAN' | 'PERSONAL_LOAN' | 'BUSINESS_LOAN' | 'GOLD_LOAN' | 'CREDIT_CARD' | 'OTHER';
 export type MilestoneTrackingMode = 'net_worth' | 'liquid_assets' | 'total_assets';
 
 // Asset types considered liquid (easily accessible for emergencies)
-export const LIQUID_ASSET_TYPES: AssetType[] = ['CASH', 'SAVINGS_ACCOUNT', 'MUTUAL_FUND', 'STOCK', 'FD', 'BONDS', 'CRYPTO'];
+export const LIQUID_ASSET_TYPES: AssetType[] = ['CASH', 'SAVINGS_ACCOUNT', 'MUTUAL_FUND', 'STOCK', 'FD', 'BONDS', 'CRYPTO', 'DIGITAL_GOLD'];
+
+export const isGramPricedAssetType = (type: AssetType) =>
+  type === 'GOLD' || type === 'DIGITAL_GOLD' || type === 'SILVER';
+
+/** Paytm/Groww digital gold is liquid; SGB and jewellery stay GOLD. */
+export const reclassifyAssetType = (type: string, name?: string): AssetType => {
+  if (type === 'GOLD' && /digital\s*gold/i.test(name || '')) return 'DIGITAL_GOLD';
+  return type as AssetType;
+};
 
 export interface Attachment {
   id: string;

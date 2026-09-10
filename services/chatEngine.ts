@@ -51,6 +51,7 @@ const TYPE_KEYWORDS: Record<string, AssetType> = {
     'mutual fund': 'MUTUAL_FUND', 'mf': 'MUTUAL_FUND', 'sip': 'MUTUAL_FUND',
     'stock': 'STOCK', 'stocks': 'STOCK', 'shares': 'STOCK', 'equity': 'STOCK',
     'real estate': 'REAL_ESTATE', 'property': 'REAL_ESTATE', 'flat': 'REAL_ESTATE', 'house': 'REAL_ESTATE', 'plot': 'REAL_ESTATE', 'land': 'REAL_ESTATE',
+    'digital gold': 'DIGITAL_GOLD', 'paytm gold': 'DIGITAL_GOLD',
     'gold': 'GOLD', 'sgb': 'GOLD',
     'silver': 'SILVER',
     'fd': 'FD', 'fixed deposit': 'FD', 'rd': 'FD', 'recurring deposit': 'FD',
@@ -259,7 +260,7 @@ export const executeIntent = (
                 ? liquidAssets.map(a => `  • ${a.name}: ${formatCurrency(a.value)}`).join('\n')
                 : '  None';
             return `💧 **Liquid Assets: ${formatCurrency(liquidTotal)}**\n\n${list}\n\n` +
-                `_These are assets easily convertible to cash._`;
+                `_Counted from Type: cash, savings, MFs, stocks, FDs, bonds, crypto, digital gold. Not property, SGB/physical gold, EPF, ESOPs, or lending._`;
         }
 
         case 'QUERY_ASSETS': {

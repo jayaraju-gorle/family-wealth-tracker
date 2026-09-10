@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Plus, Trash2, TrendingUp, TrendingDown, PieChart as PieChartIcon, Search, RefreshCw, Loader2, Zap, ExternalLink, Eye, EyeOff, FileText, ChevronDown } from 'lucide-react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
-import { AppState, Asset, Liability, AssetType, LiabilityType, Attachment, LIQUID_ASSET_TYPES } from '../types';
+import { AppState, Asset, Liability, AssetType, LiabilityType, Attachment, LIQUID_ASSET_TYPES, isGramPricedAssetType } from '../types';
 import { GlassCard } from './ui/GlassCard';
 import { formatCurrency } from '../utils';
 import { searchMutualFunds, getLatestNAV, MFSearchResult } from '../services/mfapi';
@@ -10,23 +10,25 @@ import { useLanguage } from '../i18n/LanguageContext';
 interface Props {
   data: AppState;
   onUpdate: (updates: Partial<AppState>) => void;
+  initialTab?: 'assets' | 'liabilities';
+  highlightLiquid?: boolean;
 }
 
 const ASSET_COLORS: Record<string, string> = {
   CASH: '#10b981', SAVINGS_ACCOUNT: '#34d399', MUTUAL_FUND: '#6366f1', STOCK: '#f59e0b',
-  REAL_ESTATE: '#ec4899', GOLD: '#eab308', SILVER: '#9ca3af', FD: '#06b6d4', EPF_PPF: '#8b5cf6', NPS: '#a78bfa',
+  REAL_ESTATE: '#ec4899', GOLD: '#eab308', DIGITAL_GOLD: '#facc15', SILVER: '#9ca3af', FD: '#06b6d4', EPF_PPF: '#8b5cf6', NPS: '#a78bfa',
   INSURANCE: '#f472b6', BONDS: '#2dd4bf', CRYPTO: '#f97316', VEHICLE: '#94a3b8', ESOPS: '#c084fc', LENDING: '#fb7185', OTHER: '#64748b',
 };
 
 const ASSET_LABELS: Record<string, string> = {
   CASH: 'Cash', SAVINGS_ACCOUNT: 'Savings A/C', MUTUAL_FUND: 'Mutual Funds', STOCK: 'Stocks',
-  REAL_ESTATE: 'Real Estate', GOLD: 'Gold', SILVER: 'Silver', FD: 'FD/RD', EPF_PPF: 'EPF/PPF', NPS: 'NPS',
+  REAL_ESTATE: 'Real Estate', GOLD: 'Gold', DIGITAL_GOLD: 'Digital Gold', SILVER: 'Silver', FD: 'FD/RD', EPF_PPF: 'EPF/PPF', NPS: 'NPS',
   INSURANCE: 'Insurance', BONDS: 'Bonds', CRYPTO: 'Crypto', VEHICLE: 'Vehicle', ESOPS: 'ESOPs', LENDING: 'Lending', OTHER: 'Other',
 };
 
 const ASSET_ICONS: Record<string, string> = {
   CASH: '💵', SAVINGS_ACCOUNT: '🏦', MUTUAL_FUND: '📊', STOCK: '📈', REAL_ESTATE: '🏠',
-  GOLD: '🪙', SILVER: '🪨', FD: '🔒', EPF_PPF: '🏛️', NPS: '🎯', INSURANCE: '🛡️',
+  GOLD: '🪙', DIGITAL_GOLD: '✨', SILVER: '🪨', FD: '🔒', EPF_PPF: '🏛️', NPS: '🎯', INSURANCE: '🛡️',
   BONDS: '📜', CRYPTO: '₿', VEHICLE: '🚗', ESOPS: '💼', LENDING: '🤝', OTHER: '📦',
 };
 
@@ -36,8 +38,23 @@ const LIABILITY_ICONS: Record<string, string> = {
   GOLD_LOAN: '🪙', CREDIT_CARD: '💳', OTHER: '📋',
 };
 
+const AllocationTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ name?: string; value?: number; payload?: { color?: string } }> }) => {
+  if (!active || !payload?.length) return null;
+  const item = payload[0];
+  const color = item.payload?.color || '#94a3b8';
+  return (
+    <div className="rounded-lg border border-white/25 bg-slate-950 px-3 py-2 shadow-xl">
+      <div className="flex items-center gap-2 mb-0.5">
+        <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
+        <span className="text-sm font-medium text-white">{item.name}</span>
+      </div>
+      <p className="text-sm text-slate-100 font-mono">{formatCurrency(item.value || 0)}</p>
+    </div>
+  );
+};
+
 // Types that support smart pricing
-const SMART_TYPES: AssetType[] = ['MUTUAL_FUND', 'STOCK', 'GOLD', 'SILVER'];
+const SMART_TYPES: AssetType[] = ['MUTUAL_FUND', 'STOCK', 'GOLD', 'DIGITAL_GOLD', 'SILVER'];
 
 // ─── Modern Input Styles ──────────────────────────────────────────────
 const INPUT_CLASS = 'w-full bg-white/[0.03] text-white rounded-lg px-3 py-2.5 text-sm border border-white/[0.08] focus:border-emerald-400/40 focus:ring-1 focus:ring-emerald-400/20 outline-none transition-all placeholder:text-slate-500';
@@ -151,8 +168,8 @@ const SmartValueBadge: React.FC<{ asset: Asset }> = ({ asset }) => {
       </div>
     );
   }
-  if ((asset.type === 'STOCK' || asset.type === 'GOLD' || asset.type === 'SILVER') && asset.quantity && asset.pricePerUnit) {
-    const unit = (asset.type === 'GOLD' || asset.type === 'SILVER') ? 'g' : 'qty';
+  if ((asset.type === 'STOCK' || isGramPricedAssetType(asset.type)) && asset.quantity && asset.pricePerUnit) {
+    const unit = isGramPricedAssetType(asset.type) ? 'g' : 'qty';
     return (
       <div className="text-[10px] text-amber-300/80 flex items-center gap-1 mt-0.5">
         <Zap className="w-2.5 h-2.5" />
@@ -166,9 +183,13 @@ const SmartValueBadge: React.FC<{ asset: Asset }> = ({ asset }) => {
 // ═══════════════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════════════
-export const AssetsLiabilities: React.FC<Props> = ({ data, onUpdate }) => {
+export const AssetsLiabilities: React.FC<Props> = ({ data, onUpdate, initialTab = 'assets', highlightLiquid = false }) => {
   const { t } = useLanguage();
-  const [activeTab, setActiveTab] = useState<'assets' | 'liabilities'>('assets');
+  const [activeTab, setActiveTab] = useState<'assets' | 'liabilities'>(initialTab);
+
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [showPasswords, setShowPasswords] = useState<Set<string>>(new Set());
   const [savedField, setSavedField] = useState<string | null>(null);
@@ -230,7 +251,7 @@ export const AssetsLiabilities: React.FC<Props> = ({ data, onUpdate }) => {
         if (updated.valuationMode === 'smart') {
           if (updated.type === 'MUTUAL_FUND' && updated.units && updated.navPerUnit) {
             updated.value = Math.round(updated.units * updated.navPerUnit);
-          } else if ((updated.type === 'STOCK' || updated.type === 'GOLD' || updated.type === 'SILVER') && updated.quantity && updated.pricePerUnit) {
+          } else if ((updated.type === 'STOCK' || isGramPricedAssetType(updated.type)) && updated.quantity && updated.pricePerUnit) {
             updated.value = Math.round(updated.quantity * updated.pricePerUnit);
           }
         }
@@ -474,7 +495,7 @@ export const AssetsLiabilities: React.FC<Props> = ({ data, onUpdate }) => {
         )}
 
         {/* Gold: Grams + Price per gram */}
-        {isSmart && (asset.type === 'GOLD' || asset.type === 'SILVER') && (
+        {isSmart && isGramPricedAssetType(asset.type) && (
           <div className="sm:col-span-12 grid grid-cols-1 sm:grid-cols-12 gap-4 mt-2">
             <div className="sm:col-span-4">
               <label className={LABEL_CLASS}>Weight (grams)</label>
@@ -567,7 +588,7 @@ export const AssetsLiabilities: React.FC<Props> = ({ data, onUpdate }) => {
                   <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={90} paddingAngle={3} dataKey="value" stroke="none">
                     {pieData.map((entry, i) => <Cell key={`cell-${i}`} fill={entry.color} />)}
                   </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', borderColor: '#334155', borderRadius: '8px', color: '#fff' }} formatter={(val: number) => [formatCurrency(val), 'Value']} />
+                  <Tooltip content={<AllocationTooltip />} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -602,6 +623,10 @@ export const AssetsLiabilities: React.FC<Props> = ({ data, onUpdate }) => {
         <div className="space-y-4">
           {activeTab === 'assets' && (
             <>
+              <p className="text-[12px] text-slate-500 leading-relaxed -mt-1 mb-2">{t('asset_type_liquid_note')}</p>
+              {highlightLiquid && (
+                <p className="text-[12px] text-emerald-300/80 mb-3">{t('highlight_liquid')}</p>
+              )}
               {data.assets.length === 0 && (
                 <div className="text-center py-10">
                   <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -612,7 +637,7 @@ export const AssetsLiabilities: React.FC<Props> = ({ data, onUpdate }) => {
                 </div>
               )}
               {data.assets.map(asset => (
-                <div key={asset.id} className="bg-white/[0.03] p-5 rounded-2xl border border-white/[0.06] hover:border-white/15 hover:bg-white/[0.05] transition-all group relative" style={{ borderLeft: `3px solid ${ASSET_COLORS[asset.type] || '#64748b'}40` }}>
+                <div key={asset.id} className={`bg-white/[0.03] p-5 rounded-2xl border hover:border-white/15 hover:bg-white/[0.05] transition-all group relative ${highlightLiquid && LIQUID_ASSET_TYPES.includes(asset.type) ? 'border-emerald-400/40 bg-emerald-500/[0.06]' : highlightLiquid ? 'border-white/[0.06] opacity-60' : 'border-white/[0.06]'}`} style={{ borderLeft: `3px solid ${ASSET_COLORS[asset.type] || '#64748b'}40` }}>
                   {savedField === `card-${asset.id}` && (
                     <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] rounded-full border border-emerald-500/20 animate-pulse z-10">✓ Saved</div>
                   )}
@@ -637,6 +662,12 @@ export const AssetsLiabilities: React.FC<Props> = ({ data, onUpdate }) => {
                         onChange={(e) => {
                           const newType = e.target.value as AssetType;
                           if (newType !== asset.type) {
+                            if (isGramPricedAssetType(newType) && isGramPricedAssetType(asset.type)) {
+                              onUpdate({
+                                assets: data.assets.map(a => a.id === asset.id ? { ...a, type: newType } : a)
+                              });
+                              return;
+                            }
                             // Build a clean reset: only include fields we want to keep
                             const cleanAsset: Asset = {
                               id: asset.id,
@@ -662,6 +693,7 @@ export const AssetsLiabilities: React.FC<Props> = ({ data, onUpdate }) => {
                           <option style={OPTION_STYLE} value="FD">🔒 FD / RD</option>
                           <option style={OPTION_STYLE} value="BONDS">📜 Bonds / Debentures</option>
                           <option style={OPTION_STYLE} value="CRYPTO">₿ Crypto</option>
+                          <option style={OPTION_STYLE} value="DIGITAL_GOLD">✨ Digital Gold</option>
                         </optgroup>
                         <optgroup label="🔒 Non-Liquid" style={OPTION_STYLE}>
                           <option style={OPTION_STYLE} value="REAL_ESTATE">🏠 Real Estate</option>
@@ -813,6 +845,7 @@ export const AssetsLiabilities: React.FC<Props> = ({ data, onUpdate }) => {
                             placeholder={
                               asset.type === 'REAL_ESTATE' ? 'Property details, registration number, builder name, possession date...' :
                                 asset.type === 'GOLD' || asset.type === 'SILVER' ? 'Purity (24K/22K), form (coins/bars/jewellery), purchase date, dealer...' :
+                                asset.type === 'DIGITAL_GOLD' ? 'Platform (Paytm/Groww/etc.), lock-in if any, purchase date...' :
                                   asset.type === 'FD' ? 'Maturity date, FD number, auto-renewal status, nominee...' :
                                     asset.type === 'INSURANCE' ? 'Policy number, premium amount, due date, sum assured, nominee...' :
                                       asset.type === 'VEHICLE' ? 'Registration number, model, purchase date, insurance expiry...' :
