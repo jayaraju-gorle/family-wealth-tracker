@@ -289,17 +289,22 @@ export const executeIntent = (
             const totalLiabilities = state.liabilities.reduce((a, b) => a + b.value, 0);
             const netWorth = totalAssets - totalLiabilities;
             const liquidTotal = state.assets.filter(a => LIQUID_ASSET_TYPES.includes(a.type)).reduce((a, b) => a + b.value, 0);
+            const expenseSum = (state.expenses || []).reduce((s, e) => s + e.amount, 0);
             const topAssets = state.assets.sort((a, b) => b.value - a.value).slice(0, 3);
             const milestonesDone = state.milestones.filter(m => {
                 const val = m.trackingMode === 'liquid_assets' ? liquidTotal : m.trackingMode === 'total_assets' ? totalAssets : netWorth;
                 return val >= m.targetAmount;
             }).length;
+            const runwayLine = expenseSum > 0
+                ? `🛟 Runway: ${(liquidTotal / expenseSum).toFixed(1)} months of spend from liquid assets\n`
+                : '';
 
             return `📋 **Portfolio Summary**\n\n` +
                 `💰 Net Worth: **${formatCurrency(netWorth)}**\n` +
                 `📈 Total Assets: ${formatCurrency(totalAssets)} (${state.assets.length} items)\n` +
                 `📉 Liabilities: ${formatCurrency(totalLiabilities)} (${state.liabilities.length} items)\n` +
                 `💧 Liquid: ${formatCurrency(liquidTotal)}\n` +
+                runwayLine +
                 `🏆 Milestones: ${milestonesDone}/${state.milestones.length} achieved\n\n` +
                 (topAssets.length > 0 ? `**Top Assets:**\n${topAssets.map(a => `  • ${a.name}: ${formatCurrency(a.value)}`).join('\n')}` : '');
         }

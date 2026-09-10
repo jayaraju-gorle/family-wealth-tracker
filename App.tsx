@@ -11,6 +11,7 @@ import { ChatBot } from './components/ChatBot';
 import { Toast } from './components/ui/Toast';
 import { formatCurrency, formatCompact } from './utils';
 import { LanguageProvider, useLanguage, LANGUAGE_OPTIONS } from './i18n/LanguageContext';
+import { Runway } from './components/Runway';
 
 const App: React.FC = () => {
   const { state, updateState, isSynced, syncStatus, forcePull, autoSnapshotTaken } = useStore();
@@ -209,6 +210,9 @@ const App: React.FC = () => {
                     {!monthChange && <div className="text-xs text-indigo-300/60 mt-1">Add snapshots to track changes</div>}
                   </div>
                 </div>
+
+                {/* Runway & monthly expenses */}
+                <Runway data={state} onUpdate={updateState} />
 
                 {/* Projections Chart */}
                 <Projections data={state} />

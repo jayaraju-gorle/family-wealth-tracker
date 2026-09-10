@@ -90,9 +90,15 @@ export function buildPortfolioContext(state: AppState): string {
         .filter(a => LIQUID_ASSET_TYPES.includes(a.type))
         .reduce((s, a) => s + a.value, 0);
 
-    const assetsList = state.assets.map(a => `  - ${a.name} (${a.type}): ${formatCurrency(a.value)}`).join('\n');
+    const assetsList = state.assets.map(a => {
+        const income = a.monthlyIncome ? `, monthly income ${formatCurrency(a.monthlyIncome)}` : '';
+        return `  - ${a.name} (${a.type}): ${formatCurrency(a.value)}${income}`;
+    }).join('\n');
     const liabList = state.liabilities.map(l => `  - ${l.name} (${l.type}): ${formatCurrency(l.value)}`).join('\n');
     const msList = state.milestones.map(m => `  - ${m.name}: target ${formatCurrency(m.targetAmount)}, tracking ${m.trackingMode}`).join('\n');
+    const expenseList = (state.expenses || []).map(e => `  - ${e.name}: ${formatCurrency(e.amount)}/mo`).join('\n');
+    const expenseSum = (state.expenses || []).reduce((s, e) => s + e.amount, 0);
+    const passiveIncome = state.assets.reduce((s, a) => s + (a.monthlyIncome || 0), 0);
 
     return `PORTFOLIO SUMMARY:
 Net Worth: ${formatCurrency(netWorth)}
@@ -108,6 +114,11 @@ ${liabList || '  None'}
 
 MILESTONES:
 ${msList || '  None'}
+
+MONTHLY EXPENSES:
+${expenseList || '  None'}
+Monthly expenses total: ${formatCurrency(expenseSum)}
+Passive monthly income: ${formatCurrency(passiveIncome)}
 
 LIQUID ASSET TYPES: ${LIQUID_ASSET_TYPES.join(', ')}
 VALID ASSET TYPES: CASH, SAVINGS_ACCOUNT, MUTUAL_FUND, STOCK, REAL_ESTATE, GOLD, SILVER, FD, EPF_PPF, NPS, INSURANCE, BONDS, CRYPTO, VEHICLE, ESOPS, LENDING, OTHER

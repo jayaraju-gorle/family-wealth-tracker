@@ -505,6 +505,25 @@ export const AssetsLiabilities: React.FC<Props> = ({ data, onUpdate }) => {
             </div>
           </div>
         )}
+
+        <div className="sm:col-span-4 mt-1">
+          <label className={LABEL_CLASS}>{t('monthly_income')}</label>
+          <input
+            type="text"
+            inputMode="decimal"
+            value={formatIndian(asset.monthlyIncome || 0)}
+            onChange={(e) => updateAsset(asset.id, { monthlyIncome: parseIndian(e.target.value) })}
+            placeholder={asset.type === 'BONDS' ? 'e.g. 4,000' : '0'}
+            className={INPUT_CLASS}
+          />
+          {asset.value > 0 && (asset.monthlyIncome || 0) > 0 ? (
+            <p className="text-[10px] text-emerald-400/80 mt-1">
+              {((asset.monthlyIncome! * 12 / asset.value) * 100).toFixed(1)}% {t('yield_pa')}
+            </p>
+          ) : (
+            <p className="text-[10px] text-slate-500 mt-1">{t('monthly_income_hint')}</p>
+          )}
+        </div>
       </>
     );
   };
@@ -627,6 +646,7 @@ export const AssetsLiabilities: React.FC<Props> = ({ data, onUpdate }) => {
                               growthRate: asset.growthRate,
                               valuationMode: 'manual',
                             };
+                            if (asset.monthlyIncome) cleanAsset.monthlyIncome = asset.monthlyIncome;
                             onUpdate({
                               assets: data.assets.map(a => a.id === asset.id ? cleanAsset : a)
                             });

@@ -37,6 +37,7 @@ const sanitizeState = (data: any): AppState => {
     assets,
     liabilities: data.liabilities || [],
     snapshots: data.snapshots || [],
+    expenses: Array.isArray(data.expenses) ? data.expenses : [],
     milestones,
     lastUpdated: data.lastUpdated || 0
   };

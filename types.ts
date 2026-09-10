@@ -29,6 +29,8 @@ export interface Asset {
   sipAmount?: number;         // Monthly SIP amount in ₹
   sipDay?: number;            // Day of month (1-28, default 5)
   lastSipLogDate?: string;    // ISO date of last logged SIP
+  // Coupon / rent / interest received each month (does not compound in projections)
+  monthlyIncome?: number;
   // Tracking metadata (optional)
   trackingUrl?: string;       // Portal URL (e.g., https://kuvera.in)
   trackingUsername?: string;  // Login username/email
@@ -68,6 +70,12 @@ export interface Milestone {
   trackingMode: MilestoneTrackingMode;
 }
 
+export interface ExpenseCategory {
+  id: string;
+  name: string;
+  amount: number; // monthly ₹
+}
+
 export interface AppState {
   familyId: string | null;
   assets: Asset[];
@@ -75,6 +83,7 @@ export interface AppState {
   monthlyContribution: number;
   snapshots: Snapshot[];
   milestones: Milestone[];
+  expenses: ExpenseCategory[];
   lastUpdated: number;
   themeColor: string;
   sharedGeminiKey?: string;
@@ -86,6 +95,7 @@ export const INITIAL_STATE: AppState = {
   liabilities: [],
   monthlyContribution: 25000, // Reasonable SIP amount
   snapshots: [],
+  expenses: [],
   milestones: [
     { id: '1', name: 'Emergency Fund', targetAmount: 500000, color: '#10b981', trackingMode: 'liquid_assets' },
     { id: '2', name: 'Home Down Payment', targetAmount: 5000000, color: '#3b82f6', trackingMode: 'net_worth' }

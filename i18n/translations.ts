@@ -109,6 +109,26 @@ const en = {
 
     // ─── Misc ───────────────────────────────────────────────
     snapshot_toast: '📸 Today\'s net worth snapshot saved',
+
+    // ─── Runway & expenses ──────────────────────────────────
+    runway_title: 'Savings runway',
+    runway_subtitle: 'Liquid assets vs monthly spend',
+    monthly_expenses: 'Monthly spend',
+    expense_categories: 'Expense categories',
+    add_expense: 'Add category',
+    remove_expense: 'Remove',
+    expense_name: 'e.g. Rent + maintenance',
+    add_expenses_hint: 'Add your monthly costs to see how many months of liquid assets you have.',
+    liquid_for_runway: 'Liquid assets',
+    gross_runway: 'Gross runway',
+    gross_runway_hint: 'Liquid ÷ monthly spend',
+    net_runway: 'After income',
+    net_runway_hint: 'Same as gross until you add coupon/rent income on assets',
+    passive_income: 'Passive',
+    net_burn: 'Net burn',
+    monthly_income: 'Monthly income (₹)',
+    monthly_income_hint: 'Coupon, rent, or interest. Not compounded in projections.',
+    yield_pa: 'p.a. yield',
 };
 
 const hi: TranslationKeys = {
@@ -212,6 +232,25 @@ const hi: TranslationKeys = {
 
     // ─── Misc ───────────────────────────────────────────────
     snapshot_toast: '📸 आज का नेट वर्थ स्नैपशॉट सेव हुआ',
+
+    runway_title: 'बचत रनवे',
+    runway_subtitle: 'तरल संपत्ति बनाम मासिक खर्च',
+    monthly_expenses: 'मासिक खर्च',
+    expense_categories: 'खर्च श्रेणियाँ',
+    add_expense: 'श्रेणी जोड़ें',
+    remove_expense: 'हटाएँ',
+    expense_name: 'उदा. किराया + मेंटेनेंस',
+    add_expenses_hint: 'मासिक खर्च जोड़ें और देखें तरल संपत्ति कितने महीने चलेगी।',
+    liquid_for_runway: 'तरल संपत्ति',
+    gross_runway: 'कुल रनवे',
+    gross_runway_hint: 'तरल ÷ मासिक खर्च',
+    net_runway: 'आय के बाद',
+    net_runway_hint: 'एसेट पर कूपन/किराया जोड़ने तक कुल रनवे जैसा',
+    passive_income: 'निष्क्रिय आय',
+    net_burn: 'नेट खर्च',
+    monthly_income: 'मासिक आय (₹)',
+    monthly_income_hint: 'कूपन, किराया या ब्याज। प्रोजेक्शन में चक्रवृद्धि नहीं।',
+    yield_pa: 'वार्षिक यील्ड',
 };
 
 const te: TranslationKeys = {
@@ -315,6 +354,25 @@ const te: TranslationKeys = {
 
     // ─── Misc ───────────────────────────────────────────────
     snapshot_toast: '📸 ఈ రోజు నెట్ వర్త్ స్నాప్‌షాట్ సేవ్ అయింది',
+
+    runway_title: 'పొదుపు రన్‌వే',
+    runway_subtitle: 'ద్రవ ఆస్తులు vs నెలవారీ ఖర్చు',
+    monthly_expenses: 'నెలవారీ ఖర్చు',
+    expense_categories: 'ఖర్చు వర్గాలు',
+    add_expense: 'వర్గం జోడించండి',
+    remove_expense: 'తొలగించు',
+    expense_name: 'ఉదా. అద్దె + మెయింటెనెన్స్',
+    add_expenses_hint: 'నెలవారీ ఖర్చులు జోడిస్తే ద్రవ ఆస్తులు ఎన్ని నెలలు సరిపోతాయో కనిపిస్తుంది.',
+    liquid_for_runway: 'ద్రవ ఆస్తులు',
+    gross_runway: 'మొత్తం రన్‌వే',
+    gross_runway_hint: 'ద్రవ ÷ నెలవారీ ఖర్చు',
+    net_runway: 'ఆదాయం తర్వాత',
+    net_runway_hint: 'ఆస్తిపై కూపన్/అద్దె జోడించే వరకు మొత్తం రన్‌వే లాగా',
+    passive_income: 'పాసివ్',
+    net_burn: 'నికర ఖర్చు',
+    monthly_income: 'నెలవారీ ఆదాయం (₹)',
+    monthly_income_hint: 'కూపన్, అద్దె లేదా వడ్డీ. ప్రొజెక్షన్‌లో కాంపౌండ్ కాదు.',
+    yield_pa: 'వార్షిక యీల్డ్',
 };
 
 export const translations: Record<Language, TranslationKeys> = { en, hi, te };
