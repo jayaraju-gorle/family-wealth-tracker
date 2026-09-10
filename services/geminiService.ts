@@ -116,6 +116,8 @@ VALID TRACKING MODES: net_worth, liquid_assets, total_assets`;
 }
 
 // ─── System Prompt ────────────────────────────────────────────────────
+const GEMINI_TEXT_MODEL = 'gemini-3.6-flash';
+
 const SYSTEM_PROMPT = `You are WealthTracker Assistant, a helpful financial assistant embedded in a personal wealth tracking app.
 
 CAPABILITIES:
@@ -148,7 +150,7 @@ export async function callGemini(
     apiKey: string,
     conversationHistory: { role: string; text: string }[] = []
 ): Promise<{ response: string; action: any | null }> {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_TEXT_MODEL}:generateContent?key=${apiKey}`;
 
     // Build conversation parts
     const contents = [
@@ -171,7 +173,7 @@ export async function callGemini(
         contents,
         generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 512,
+            maxOutputTokens: 2048,
             topP: 0.9,
         },
     };
@@ -191,7 +193,12 @@ export async function callGemini(
     }
 
     const data = await res.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const parts = data?.candidates?.[0]?.content?.parts || [];
+    const text = parts
+        .filter((p: { thought?: boolean; text?: string }) => p?.text && !p.thought)
+        .map((p: { text: string }) => p.text)
+        .join('\n')
+        .trim();
 
     // Extract JSON action block
     const jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
